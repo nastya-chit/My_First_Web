@@ -8,6 +8,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body>
     <nav class="navbar navbar-dark bg-dark p-3">
         <div class="container-fluid">
@@ -15,6 +16,11 @@
                 <img src="logohack.jpeg" alt="logo" class="me-2">
                 <span class="text-light">History</span>
             </a>
+            <?php if (isset($_COOKIE['User'])): ?>
+                <form action="/logout.php" method="POST" class="d-flex">
+                    <button class="btn btn-outline-danger" type="submit">Logout</button>
+                </form>
+            <?php endif;  ?>
         </div>
     </nav>
     <div class="container mt-5">
@@ -32,7 +38,7 @@
         </div>
         <div class="mt-5">
             <h2 class="text-center mb-4">Add New Post</h2>
-            <form accept="profile.html" id="postForm" class="d-flex flex-column gap-3" method="post" enctype="multipart/form-data">
+            <form accept="profile.php" id="postForm" class="d-flex flex-column gap-3" method="post" enctype="multipart/form-data">
                 <div class="form-group">
                     <label class="form-label" for="postTitle">Post Title</label>
                     <input type="text" name="postTitle" class="form-control hacker-input" id="postTitle" placeholder="Enter post Title" required>
@@ -52,3 +58,38 @@
     <script src="js/script.js"></script>
 </body>
 </html>
+
+<?php 
+if (!isset($_COOKIE['User'])){
+    header('Location: /login.php');
+    exit();
+}
+
+require_once('db.php');
+$link = mysqli_connect('127.0.0.1', 'root', '1234', 'first');
+
+if (isset($_POST['submit'])) {
+    $title = $_POST['postTitle'];
+    $main_text = $_POST['postContent'];
+    
+    if (!$title || !$main_text) die ("no data post");
+    $sql = "INSERT INTO posts (title, main_text) VALUES ('$title', '$main_text')";
+
+    if (!mysqli_query($link,$sql)) die ("error insert data post");
+
+    if (!empty($_FILES["file"]))
+    {
+        if (((@$_FILES["file"]["type"]=="image/gif") || (@$_FILES["file"]["type"]=="image/jpeg")
+        || (@$_FILES["file"]["type"]=="image/jpg") || (@$_FILES["file"]["type"]=="image/pjpeg")
+        || (@$_FILES["file"]["type"]=="image/x-png") || (@$_FILES["file"]["type"]=="image/png"))
+        && (@$_FILES["file"]["size"] < 102400))
+        {
+            move_uploaded_file($_FILES["file"]["tmp_name"], "upload/" . $_FILES["file"]["name"]);
+            echo "Load in: " . "upload/" . $_FILES["file"]["name"];
+        }
+        else{
+            echo "upload failed!";
+        }
+    }
+}
+?>

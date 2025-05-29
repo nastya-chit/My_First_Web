@@ -1,3 +1,13 @@
+<?php
+    $link = mysqli_connect("127.0.0.1", "root", "1234", "first");
+    $id = $_GET['id'];
+    $sql = "SELECT * FROM posts WHERE id = $id";
+    $result = mysqli_query($link, $sql);
+    $rows = mysqli_fetch_array($result);
+    $title = $rows['title'];
+    $main_text = $rows['main_text'];
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,15 +22,10 @@
     <div class="container d-flex justify-content-center align-items-center vh-100">
         <div class="row">
             <div class="col-12 text-center">
-                <h1 class="mb-4">Registration</h1>
-                <form action="registration.html" method="post" class="d-flex flex-column gap-3">
-                    <input type="text" name="login" class="form-control-hacker-input" placeholder="login">
-                    <input type="email" name="email" class="form-control-hacker-input" placeholder="email">
-                    <input type="password" name="password" class="form-control-hacker-input" placeholder="password">
-                    <button class="btn btn-primary" type="submit" name="submit">Registration</button>
-                    <p class="mt-3">Alredy have an account?<a href="login.html">Login</a>
-                    </p>                
-                </form>
+                <?php
+                    echo "<h1> $title </h1>";
+                    echo "<p> $main_text </p>";
+                ?>
             </div>
         </div>
     </div>
